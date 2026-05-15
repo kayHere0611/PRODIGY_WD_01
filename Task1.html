@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Navigation Menu</title>
+    <style>
+      /* Reset basic margins */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Base Navbar Styles (Initial State) */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 20px 0;
+            background-color: transparent; /* Initial transparent state */
+            transition: all 0.4s ease-in-out; /* Smooth transition for scrolling */
+        }
+
+        .nav-container {
+            width: 85%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #1e3a8a;
+            transition: color 0.4s ease;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #334155;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease; /* Smooth hover transition */
+        }
+
+        /* --- Hover Interactivity --- */
+        .nav-item:hover {
+            color: #ffffff;
+            background-color: #2856bb; /* Solid blue background on hover */
+        }
+
+        /* --- Scrolled State (Triggered by JavaScript) --- */
+        .navbar.scrolled {
+            background-color: #1e3a8a; /* Solid dark blue background on scroll */
+            padding: 12px 0; /* Shrinks the navbar slightly for a sleek look */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Adjust text colors inside navbar when scrolled */
+        .navbar.scrolled .logo {
+            color: #ffffff;
+        }
+
+        .navbar.scrolled .nav-item {
+            color: #e2e8f0; /* Soft light gray for contrast on dark blue */
+        }
+
+        /* Adjusted Hover state while inside a scrolled navbar */
+        .navbar.scrolled .nav-item:hover {
+            color: #1e3a8a;
+            background-color: #ffffff; /* Inverts hover colors when scrolled */
+        }
+
+        /* Layout helper for sample sections */
+        .content-section {
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+
+
+        /* --- RESPONSIVE MOBILE NAVIGATION (Add to bottom of file) --- */
+        @media screen and (max-width: 768px) {
+            /* 1. Hide the standard link layout and convert to a mobile dropdown */
+            .nav-links {
+                position: absolute;
+                top: 100%; /* Sits exactly below the navbar */
+                left: 0;
+                width: 100%;
+                background-color: #ffffff; /* Default mobile menu background */
+                flex-direction: column;
+                gap: 0;
+                text-align: center;
+                max-height: 0; /* Hidden by default */
+                overflow: hidden;
+                transition: max-height 0.4s ease-in-out, background-color 0.4s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            /* Change link appearance inside the mobile menu dropdown */
+            .nav-item {
+                display: block;
+                padding: 20px 0;
+                border-radius: 0;
+            }
+
+            /* 2. Style the Hamburger Button wrapper */
+            .menu-toggle {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                width: 30px;
+                height: 21px;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                z-index: 1001;
+            }
+
+            /* Style the 3 individual individual bars */
+            .menu-toggle .bar {
+                height: 3px;
+                width: 100%;
+                background-color: #1e3a8a; /* Matches your logo blue */
+                border-radius: 2px;
+                transition: all 0.3s ease-in-out;
+            }
+
+            /* 3. The Active State: When JavaScript toggles '.active' */
+            .nav-links.active {
+                max-height: 300px; /* Gives it room to smoothly slide open */
+            }
+
+            /* Morphing the hamburger bars into an 'X' close icon when active */
+            .menu-toggle.active .bar:nth-child(1) {
+                transform: translateY(9px) rotate(45deg);
+            }
+            .menu-toggle.active .bar:nth-child(2) {
+                opacity: 0; /* Hides middle bar */
+            }
+            .menu-toggle.active .bar:nth-child(3) {
+                transform: translateY(-9px) rotate(-45deg);
+            }
+
+            /* 4. Adaptive Colors: Handle the menu look when the page is scrolled */
+            .navbar.scrolled .nav-links {
+                background-color: #1e3a8a; /* Syncs dropdown background with dark navbar */
+            }
+            
+            .navbar.scrolled .menu-toggle .bar {
+                background-color: #ffffff; /* Turns hamburger white on dark background */
+            }
+        }
+
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth; /* THIS Enables clean gliding motion */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+      <div class="nav-container">
+        <a href="#" class="logo">KayNav</a>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <ul class="nav-links" id="nav-links"> 
+            <li><a href="#home" class="nav-item">Home</a></li>
+            <li><a href="#about" class="nav-item">About</a></li>
+            <li><a href="#services" class="nav-item">Services</a></li>
+            <li><a href="#contact" class="nav-item">Contact</a></li>
+        </ul>  
+      </div>
+    </nav>
+
+    <div style="text-align:center;">
+        <section id="home" class="content-section" style="background-color: #f4f6f9; height: 100vh; padding-top: 100px;">
+            <h1>Welcome to the Hero Section!</h1>
+            <p>Clicking "Home" smoothly brings you right here.</p>
+            <h4>Scroll down to see the magic!</h1>
+        </section>
+    
+        <section id="about" class="content-section" style="background-color: #e2e8f0; height: 100vh;">
+            <h2>About Us</h2>
+            <p>This is the About section.<br> I had build a Responsive Landing Page.<br> You are seeing.</p>
+        </section>
+
+        <section id="services" class="content-section" style="background-color: #cbd5e1; height: 100vh;">
+            <h2>Our Services</h2>
+            <p>Explore what we can build for you here.</p>
+            <h2>Keep Scrolling...</h2>
+        </section>
+
+        <section id="contact" class="content-section" style="background-color: #94a3b8; height: 100vh;">
+            <h2>Contact</h2>
+            <p>Get in touch with us here.</p>
+            <h4>Notice how the background and text colors updated seamlessly.</h4>
+        </section>
+    </div>
+
+
+    <script>
+      // Grab the navbar element
+        const navbar = document.getElementById('navbar');
+
+        // Listen for the scroll event on the window
+        window.addEventListener('scroll', () => {
+            // Check if user has scrolled down more than 50 pixels
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+
+        // --- FOR HAMBURGER MENU  ---
+
+        const menuToggle = document.getElementById('menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            // Toggles the dropdown menu visibility
+            navLinks.classList.toggle('active');
+            // Toggles the hamburger animation to an 'X'
+            menuToggle.classList.toggle('active');
+        });
+
+        // Close mobile menu when a link is clicked
+        document.querySelectorAll('.nav-item').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                menuToggle.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
